@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -395,6 +398,7 @@ class HtmlEditorState extends State<HtmlEditor> {
 </html>
 ''';
   late String _initialPageContent;
+  late double _maxHeight;
   late InAppWebViewController _webViewController;
   double? _documentHeight;
   late HtmlEditorApi _api;
@@ -424,6 +428,7 @@ blockquote {
   void initState() {
     super.initState();
     _api = HtmlEditorApi(this);
+    _maxHeight = window.physicalSize.height;
     _initialPageContent = generateHtmlDocument(widget.initialContent);
   }
 
@@ -464,9 +469,14 @@ blockquote {
           if (widget.adjustHeight) {
             final scrollHeight = await controller.evaluateJavascript(
                 source: 'document.body.scrollHeight');
-            if (mounted && (scrollHeight + 15.0 > widget.minHeight)) {
+            final scrollHeightWithBuffer = scrollHeight + 15.0;
+            if (mounted && scrollHeightWithBuffer > widget.minHeight) {
               setState(() {
-                _documentHeight = scrollHeight + 15.0;
+                if (Platform.isAndroid && scrollHeightWithBuffer > _maxHeight){
+                  _documentHeight = _maxHeight;
+                } else {
+                  _documentHeight = scrollHeightWithBuffer;
+                }
               });
             }
           }
@@ -492,9 +502,9 @@ blockquote {
                 ? Future.value(NavigationActionPolicy.ALLOW)
                 // for all other requests: block
                 : Future.value(NavigationActionPolicy.CANCEL),
-        gestureRecognizers: {
-          Factory<LongPressGestureRecognizer>(
-              () => LongPressGestureRecognizer()),
+        gestureRecognizers: const {
+          Factory<LongPressGestureRecognizer>(LongPressGestureRecognizer.new),
+          Factory<ScaleGestureRecognizer>(ScaleGestureRecognizer.new),
         },
         contextMenu: ContextMenu(
           menuItems: [
@@ -747,9 +757,14 @@ blockquote {
     if (message.startsWith('h')) {
       if (widget.adjustHeight) {
         final height = double.tryParse(message.substring(1));
-        if (height != null) {
+        if (height != null && mounted) {
+          final scrollHeightWithBuffer = height + 15.0;
           setState(() {
-            _documentHeight = height + 15.0;
+            if (Platform.isAndroid && scrollHeightWithBuffer > _maxHeight){
+              _documentHeight = _maxHeight;
+            } else {
+              _documentHeight = scrollHeightWithBuffer;
+            }
           });
         }
       }
@@ -765,11 +780,14 @@ blockquote {
     if (widget.adjustHeight) {
       final scrollHeight = await _webViewController.evaluateJavascript(
           source: 'document.body.scrollHeight');
-      if (scrollHeight != null &&
-          mounted &&
-          (scrollHeight + 15.0 > widget.minHeight)) {
+      final scrollHeightWithBuffer = scrollHeight + 15.0;
+      if (mounted && scrollHeightWithBuffer > widget.minHeight) {
         setState(() {
-          _documentHeight = scrollHeight + 15.0;
+          if (Platform.isAndroid && scrollHeightWithBuffer > _maxHeight){
+            _documentHeight = _maxHeight;
+          } else {
+            _documentHeight = scrollHeightWithBuffer;
+          }
         });
       }
     }
