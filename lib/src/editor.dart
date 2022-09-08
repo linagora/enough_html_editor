@@ -502,9 +502,14 @@ blockquote {
                 ? Future.value(NavigationActionPolicy.ALLOW)
                 // for all other requests: block
                 : Future.value(NavigationActionPolicy.CANCEL),
-        gestureRecognizers: const {
-          Factory<LongPressGestureRecognizer>(LongPressGestureRecognizer.new),
-          Factory<ScaleGestureRecognizer>(ScaleGestureRecognizer.new),
+        gestureRecognizers: {
+          const Factory<LongPressGestureRecognizer>(
+              LongPressGestureRecognizer.new),
+          const Factory<ScaleGestureRecognizer>(
+              ScaleGestureRecognizer.new),
+          if (_documentHeight != null && _documentHeight! >= _maxHeight)
+            const Factory<VerticalDragGestureRecognizer>(
+                VerticalDragGestureRecognizer.new),
         },
         contextMenu: ContextMenu(
           menuItems: [
