@@ -361,6 +361,18 @@ class HtmlEditorState extends State<HtmlEditor> {
     }
   }
   
+  function hideKeyboard() {
+    var editor = document.getElementById('editor');
+    editor.readOnly = true;
+    editor.focus();
+  }
+  
+  function showKeyboard() {
+    var editor = document.getElementById('editor');
+    editor.readOnly = false;
+    editor.focus();
+  }
+  
   function moveCursorAtLastNode() {
     var nodeSignature = document.getElementsByClassName('tmail-signature');
     var editor = document.getElementById('editor');
@@ -397,7 +409,7 @@ class HtmlEditorState extends State<HtmlEditor> {
 </script>
 </head>
 <body onload="onLoaded();">
-<div id="editor" contenteditable="true" onfocus="onFocus();" onfocusout="onFocusOut();">
+<div id="editor" contenteditable="true" onfocus="onFocus();" onfocusout="onFocusOut();" inputmode="">
 ==content==
 </div>
 </body>
@@ -420,6 +432,7 @@ blockquote {
 }
 #editor {
   min-height: ==minHeight==px;
+  display: inline-block;
 }
   ''';
 
