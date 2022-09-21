@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -362,7 +364,10 @@ class HtmlEditorState extends State<HtmlEditor> {
   function moveCursorAtLastNode() {
     var nodeSignature = document.getElementsByClassName('tmail-signature');
     var editor = document.getElementById('editor');
+    const textnode = document.createTextNode('');
+    editor.appendChild(textnode);
     var lastChild; 
+    editor.focus();
     if (nodeSignature.length <= 0) {
       lastChild = editor.lastChild;
     } else {
@@ -475,12 +480,14 @@ blockquote {
             }
           }
         },
-
         initialOptions: InAppWebViewGroupOptions(
             crossPlatform: InAppWebViewOptions(
               supportZoom: false,
               transparentBackground: true,
               useShouldOverrideUrlLoading: true,
+            ),
+            ios: IOSInAppWebViewOptions(
+              disableInputAccessoryView: true,
             ),
             android: AndroidInAppWebViewOptions(
               forceDark: widget.enableDarkMode
@@ -758,7 +765,9 @@ blockquote {
         }
       }
     } else if (message == 'onfocus') {
-      FocusScope.of(context).unfocus();
+      if(!Platform.isAndroid) {
+        FocusScope.of(context).unfocus();
+      }
       final onFocus = _api.onFocus;
       if (onFocus != null) {
         onFocus();
