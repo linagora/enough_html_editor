@@ -60,6 +60,9 @@ class HtmlEditorApi {
   /// Callback when focus editor
   void Function()? onFocus;
 
+  /// Callback when onKeyDown
+  void Function()? onKeyDown;
+
   /// Callback when unFocus editor
   void Function()? onFocusOut;
 

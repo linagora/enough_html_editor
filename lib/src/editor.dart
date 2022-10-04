@@ -324,6 +324,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     if (!isInList && (event.keyCode === 13 || event.key === 'Enter')) {
       document.execCommand('insertLineBreak');
       event.preventDefault();
+      window.flutter_inappwebview.callHandler('InternalUpdate', 'onKeyDown');
     }
   }
 
@@ -776,6 +777,11 @@ blockquote {
       final onFocusOut = _api.onFocusOut;
       if (onFocusOut != null) {
         onFocusOut();
+      }
+    } else if (message == 'onKeyDown') {
+      final onKeyDown = _api.onKeyDown;
+      if (onKeyDown != null) {
+        onKeyDown();
       }
     }
   }
