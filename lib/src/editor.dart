@@ -398,7 +398,7 @@ class HtmlEditorState extends State<HtmlEditor> {
 </script>
 </head>
 <body onload="onLoaded();">
-<div id="editor" contenteditable="true" onfocus="onFocus();" onfocusout="onFocusOut();">
+<div id="editor" contenteditable="true" onfocus="onFocus();" onfocusout="onFocusOut();" inputmode="text">
 ==content==
 </div>
 </body>

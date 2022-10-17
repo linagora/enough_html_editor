@@ -150,3 +150,13 @@ extension SafeFontNamesExtension on SafeFont {
     }
   }
 }
+
+/// InputMode
+enum InputMode {
+
+  /// none
+  none,
+
+  /// text
+  text;
+}

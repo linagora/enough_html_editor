@@ -424,4 +424,9 @@ class HtmlEditorApi {
     final check = await _webViewController.evaluateJavascript(source: 'document.hasFocus()');
     return check;
   }
+
+  /// setInputMode
+  Future<void> setInputMode(InputMode inputMode) async => _webViewController.evaluateJavascript(source: '''
+      document.getElementById("editor").setAttribute("inputmode","${inputMode.name}");
+    ''');
 }
