@@ -326,8 +326,12 @@ class HtmlEditorState extends State<HtmlEditor> {
   function onKeyDown(event) {
     //console.log('keydown', event.key, event);
     if (!isInList && (event.keyCode === 13 || event.key === 'Enter')) {
-      if (whichTag("blockquote")){
+      if (whichTag('blockquote')) {
         document.execCommand('InsertParagraph');
+        document.execCommand('Outdent');
+      } else if (whichTag('pre')) {
+        document.execCommand('InsertParagraph');
+        document.execCommand('formatBlock', false, 'p');
         document.execCommand('Outdent');
       } else {
         document.execCommand('insertLineBreak');
@@ -432,7 +436,7 @@ blockquote {
 pre {
   display: block;
   padding: 10px;
-  margin: 0 0 10px;
+  margin: 10px 0px 10px;
   font-size: 13px;
   line-height: 1.5;
   color: #333;
