@@ -33,6 +33,7 @@ class HtmlEditor extends StatefulWidget {
     this.addDefaultSelectionMenuItems = true,
     this.textSelectionMenuItems,
     this.enableDarkMode = false,
+    this.customStyleCss,
   }) : super(key: key);
 
   /// Set the [initialContent] to populate the editor with some existing text
@@ -67,6 +68,9 @@ class HtmlEditor extends StatefulWidget {
 
   /// Should the editor run in dark mode?
   final bool enableDarkMode;
+
+  /// Defines add additional css styles to the html editor
+  final String? customStyleCss;
 
   @override
   HtmlEditorState createState() => HtmlEditorState();
@@ -419,9 +423,24 @@ blockquote {
   padding-left: 15px;
   border-left: 3px solid #ccc;
 }
+pre {
+  display: block;
+  padding: 10px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #333;
+  word-break: break-all;
+  word-wrap: break-word;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: auto;
+}
 #editor {
   min-height: ==minHeight==px;
 }
+==customStyleCss==
   ''';
 
   /// Access to the API of the editor.
@@ -440,8 +459,13 @@ blockquote {
   /// Generates the editor document html from the specified [content].
   String generateHtmlDocument(String content) {
     final buffer = StringBuffer();
-    final stylesWithMinHeight =
+    var stylesWithMinHeight =
         styles.replaceFirst('==minHeight==', '${widget.minHeight}');
+    if (widget.customStyleCss != null) {
+      stylesWithMinHeight = stylesWithMinHeight.replaceFirst(
+          '==customStyleCss==',
+          widget.customStyleCss!);
+    }
     buffer
         .write(_templateStart.replaceFirst('==styles==', stylesWithMinHeight));
     if (widget.splitBlockquotes) {
