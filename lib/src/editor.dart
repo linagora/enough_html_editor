@@ -7,7 +7,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import 'editor_api.dart';
 import 'models.dart';
-import 'signature/email_signature_utils.dart';
+import 'utils/javascript_utils.dart';
 
 /// Slim HTML Editor with API
 class HtmlEditor extends StatefulWidget {
@@ -326,7 +326,12 @@ class HtmlEditorState extends State<HtmlEditor> {
   function onKeyDown(event) {
     //console.log('keydown', event.key, event);
     if (!isInList && (event.keyCode === 13 || event.key === 'Enter')) {
-      document.execCommand('insertLineBreak');
+      if (whichTag("blockquote")){
+        document.execCommand('InsertParagraph');
+        document.execCommand('Outdent');
+      } else {
+        document.execCommand('insertLineBreak');
+      }
       event.preventDefault();
       window.flutter_inappwebview.callHandler('InternalUpdate', 'onKeyDown');
     }
@@ -398,7 +403,8 @@ class HtmlEditorState extends State<HtmlEditor> {
     document.execCommand("styleWithCSS", false, true);
   }
   
-  ${EmailSigantureUtils.jsFunctionHandleSignature}
+  $jsHandleSignature
+  $jsFindingInnerHtmlTags
 </script>
 </head>
 <body onload="onLoaded();">
