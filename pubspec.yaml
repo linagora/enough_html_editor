@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_colorpicker: ^1.0.3
-  flutter_inappwebview: 5.4.3+8
+  flutter_inappwebview: 5.7.1
   image: ^3.1.3
 
 
