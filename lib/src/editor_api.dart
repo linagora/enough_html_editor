@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:image/image.dart' as img;
 import 'editor.dart';
@@ -110,14 +107,14 @@ class HtmlEditorApi {
   }
 
   /// Removes the focus from the editor
-  Future unfocus(BuildContext context) =>
-      SystemChannels.textInput.invokeMethod('TextInput.hide');
   Future unfocus() async {
-    //TODO consider to re-implement or check if focus node works with
-    // webview 3.0
-    if((await _hasFocus()) == true) {
-      await _webViewController.clearFocus();
-      onFocusOut?.call();
+    if (onFocusOut != null) {
+      if ((await _hasFocus()) == true) {
+        await _webViewController.clearFocus();
+        onFocusOut?.call();
+      }
+    } else {
+      return SystemChannels.textInput.invokeMethod('TextInput.hide');
     }
   }
 
@@ -236,7 +233,7 @@ class HtmlEditorApi {
       if (image.width > maxWidth) {
         final copy = img.copyResize(image, width: maxWidth);
         // ignore: parameter_assignments
-        data = img.encodePng(copy) as Uint8List;
+        data = img.encodePng(copy);
         // ignore: parameter_assignments
         mimeType = 'image/png';
       }
@@ -424,7 +421,8 @@ class HtmlEditorApi {
 
   /// checkHasFocus
   Future<bool?> _hasFocus() async {
-    final check = await _webViewController.evaluateJavascript(source: 'document.hasFocus()');
+    final check = await _webViewController
+      .evaluateJavascript(source: 'document.hasFocus()');
     return check;
   }
 }
