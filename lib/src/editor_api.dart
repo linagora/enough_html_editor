@@ -77,6 +77,9 @@ class HtmlEditorApi {
   /// Callback to be informed when the font family has been changed
   void Function(SafeFont?)? onFontFamilyChanged;
 
+  /// Callback when cursor changed
+  void Function(List<int>?)? onCursorCoordinatesChanged;
+
   final List<void Function(ColorSetting)> _colorChangedSettings = [];
 
   /// Callback to be informed when the color settings have been changed

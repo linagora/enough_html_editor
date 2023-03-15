@@ -407,12 +407,19 @@ class HtmlEditorState extends State<HtmlEditor> {
     document.execCommand("styleWithCSS", false, true);
   }
   
+  function displayCursorCoordinates(event) {
+    let X = event.clientX;
+    let Y = event.clientY;
+    let result = [X,Y].toString();
+    window.flutter_inappwebview.callHandler('InternalUpdateCursorCoordinates', result);
+  }
+  
   $jsHandleSignature
   $jsFindingInnerHtmlTags
 </script>
 </head>
 <body onload="onLoaded();">
-<div id="editor" contenteditable="true" onfocus="onFocus();" onfocusout="onFocusOut();">
+<div id="editor" contenteditable="true" onfocus="onFocus()" onclick="displayCursorCoordinates(event)">
 ==content==
 </div>
 </body>
@@ -603,6 +610,10 @@ pre {
       ..addJavaScriptHandler(
         handlerName: 'InternalUpdate',
         callback: _onInternalUpdateReceived,
+      )
+      ..addJavaScriptHandler(
+        handlerName: 'InternalUpdateCursorCoordinates',
+        callback: _onInternalUpdateCursorCoordinatesReceived,
       );
     // JavascriptChannel(
     //   name: 'OffsetTracker',
@@ -803,6 +814,20 @@ pre {
       if (onKeyDown != null) {
         onKeyDown();
       }
+    }
+  }
+
+  void _onInternalUpdateCursorCoordinatesReceived(List<dynamic> parameters) {
+    final String message = parameters.first;
+     debugPrint('InternalUpdateCursorCoordinatesReceived got update: $message');
+    final callback = _api.onCursorCoordinatesChanged;
+    if (callback != null) {
+    final cursorCoordinates =  message.split(',');
+     final result = <int>[
+       int.parse(cursorCoordinates[0]),
+       int.parse(cursorCoordinates[1]),
+     ];
+     callback.call(result);
     }
   }
 
