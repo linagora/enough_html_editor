@@ -408,9 +408,21 @@ class HtmlEditorState extends State<HtmlEditor> {
   }
   
   function displayCursorCoordinates(event) {
-    let X = event.changedTouches[0].pageX;
-    let Y = event.changedTouches[0].pageY;
-    let result = [X,Y].toString();
+    var x = 0;
+    var y = 0;
+    var sel = window.getSelection();
+    if(sel.rangeCount) {
+      var range = sel.getRangeAt(0).cloneRange();
+      if(range.getClientRects()) {
+      range.collapse(true);
+      var rect = range.getClientRects()[0];
+        if(rect) {
+            y = rect.top;
+            x = rect.left;
+        }
+      }
+    }
+    let result = [x,y].toString();
     window.flutter_inappwebview.callHandler('InternalUpdateCursorCoordinates', result);
   }
   
@@ -419,7 +431,7 @@ class HtmlEditorState extends State<HtmlEditor> {
 </script>
 </head>
 <body onload="onLoaded();">
-<div id="editor" contenteditable="true" onfocus="onFocus()" onfocusout="onFocusOut()" ontouchend="displayCursorCoordinates(event)">
+<div id="editor" contenteditable="true" onfocus="onFocus()" onfocusout="onFocusOut()" onkeyup="displayCursorCoordinates(event)">
 ==content==
 </div>
 </body>
@@ -838,8 +850,8 @@ pre {
     if (callback != null) {
     final cursorCoordinates =  message.split(',');
      final result = <int>[
-       int.parse(cursorCoordinates[0]),
-       int.parse(cursorCoordinates[1]),
+       double.parse(cursorCoordinates[0]).ceil(),
+       double.parse(cursorCoordinates[1]).ceil(),
      ];
      callback.call(result);
     }
