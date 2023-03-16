@@ -408,8 +408,8 @@ class HtmlEditorState extends State<HtmlEditor> {
   }
   
   function displayCursorCoordinates(event) {
-    let X = event.clientX;
-    let Y = event.clientY;
+    let X = event.changedTouches[0].pageX;
+    let Y = event.changedTouches[0].pageY;
     let result = [X,Y].toString();
     window.flutter_inappwebview.callHandler('InternalUpdateCursorCoordinates', result);
   }
@@ -419,7 +419,7 @@ class HtmlEditorState extends State<HtmlEditor> {
 </script>
 </head>
 <body onload="onLoaded();">
-<div id="editor" contenteditable="true" onfocus="onFocus()" onclick="displayCursorCoordinates(event)">
+<div id="editor" contenteditable="true" onfocus="onFocus()" onfocusout="onFocusOut()" ontouchend="displayCursorCoordinates(event)">
 ==content==
 </div>
 </body>
@@ -833,7 +833,7 @@ pre {
 
   void _onInternalUpdateCursorCoordinatesReceived(List<dynamic> parameters) {
     final String message = parameters.first;
-     debugPrint('InternalUpdateCursorCoordinatesReceived got update: $message');
+    debugPrint('InternalUpdateCursorCoordinatesReceived got update: $message');
     final callback = _api.onCursorCoordinatesChanged;
     if (callback != null) {
     final cursorCoordinates =  message.split(',');
