@@ -412,7 +412,7 @@ class HtmlEditorApi {
 
   /// Insert signature
   Future<void> insertSignature(String signature) => _webViewController
-      .evaluateJavascript(source: "insertSignature('$signature');");
+    .evaluateJavascript(source: 'insertSignature(`$signature`);');
 
   /// Remove signature
   Future<void> removeSignature() => _webViewController
