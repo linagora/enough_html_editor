@@ -34,6 +34,7 @@ class HtmlEditor extends StatefulWidget {
     this.textSelectionMenuItems,
     this.enableDarkMode = false,
     this.customStyleCss,
+    this.customScripts,
   }) : super(key: key);
 
   /// Set the [initialContent] to populate the editor with some existing text
@@ -71,6 +72,9 @@ class HtmlEditor extends StatefulWidget {
 
   /// Defines add additional css styles to the html editor
   final String? customStyleCss;
+
+  /// Defines add additional java script to the html editor
+  final String? customScripts;
 
   @override
   HtmlEditorState createState() => HtmlEditorState();
@@ -434,6 +438,7 @@ class HtmlEditorState extends State<HtmlEditor> {
 <div id="editor" contenteditable="true" onfocus="onFocus()" onfocusout="onFocusOut()" onkeyup="displayCursorCoordinates(event)">
 ==content==
 </div>
+==customScripts==
 </body>
 </html>
 ''';
@@ -500,7 +505,15 @@ pre {
     if (widget.splitBlockquotes) {
       buffer.write(_templateBlockquote);
     }
-    buffer.write(_templateContinuation.replaceFirst('==content==', content));
+    var contentHtml = _templateContinuation.replaceFirst('==content==', content);
+    if (widget.customScripts != null) {
+      contentHtml = contentHtml.replaceFirst(
+        '==customScripts==',
+        widget.customScripts!
+      );
+    }
+    buffer.write(contentHtml);
+
     final html = buffer.toString();
 
     return html;
