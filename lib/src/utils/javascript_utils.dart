@@ -1,36 +1,120 @@
 
+import 'package:enough_html_editor/src/utils/icon_utils.dart';
+
 const String jsHandleSignature = '''
   function insertSignature(signature) {
-    const nodeSignature = document.getElementsByClassName('tmail-signature');
-    if (nodeSignature.length <= 0) {
-      const nodeEditor = document.getElementById('editor');
-      
-      const divSignature = document.createElement('div');
-      divSignature.setAttribute('class', 'tmail-signature');
-      divSignature.innerHTML = signature;
-      
-      const listHeaderQuotedMessage = nodeEditor.querySelectorAll('cite');
-      const listQuotedMessage = nodeEditor.querySelectorAll('blockquote');
-      
-      if (listHeaderQuotedMessage.length > 0) {
-        nodeEditor.insertBefore(divSignature, listHeaderQuotedMessage[0]);
-      } else if (listQuotedMessage.length > 0) {
-        nodeEditor.insertBefore(divSignature, listQuotedMessage[0]);
+    const signatureNode = document.querySelector('#editor > .tmail-signature');
+    if (signatureNode) {
+      const currentSignatureContent = document.querySelector('#editor > .tmail-signature > .tmail-signature-content');
+      const currentSignatureButton = document.querySelector('#editor > .tmail-signature > .tmail-signature-button');
+    
+      if (currentSignatureContent && currentSignatureButton) {
+        currentSignatureContent.innerHTML = signature;
+        currentSignatureButton.contentEditable = "false";
+        currentSignatureButton.setAttribute('onclick', 'handleOnClickSignature()');
+        if (currentSignatureContent.style.display === 'none') {
+          currentSignatureButton.style.backgroundImage = `${IconUtils.chevronDownSVGIconUrlEncoded}`;
+        } else {
+          currentSignatureButton.style.backgroundImage = `${IconUtils.chevronUpSVGIconUrlEncoded}`;
+        }
       } else {
-        nodeEditor.appendChild(divSignature);
+        const signatureContainer = document.createElement('div');
+        signatureContainer.setAttribute('class', 'tmail-signature');
+    
+        const signatureContent = document.createElement('div');
+        signatureContent.setAttribute('class', 'tmail-signature-content');
+        signatureContent.innerHTML = signature;
+        signatureContent.style.display = 'none';
+    
+        const signatureButton = document.createElement('button');
+        signatureButton.setAttribute('class', 'tmail-signature-button');
+        signatureButton.textContent = 'Signature';
+        signatureButton.contentEditable = "false";
+        signatureButton.style.backgroundImage = `${IconUtils.chevronDownSVGIconUrlEncoded}`;
+        signatureButton.setAttribute('onclick', 'handleOnClickSignature()');
+    
+        signatureContainer.appendChild(signatureButton);
+        signatureContainer.appendChild(signatureContent);
+    
+        if (signatureNode.outerHTML) {
+          signatureNode.outerHTML = signatureContainer.outerHTML;
+        } else {
+          signatureNode.parentNode.replaceChild(signatureContainer, signatureNode);
+        }
       }
     } else {
-      nodeSignature[0].innerHTML = signature;
+      const signatureContainer = document.createElement('div');
+      signatureContainer.setAttribute('class', 'tmail-signature');
+    
+      const signatureContent = document.createElement('div');
+      signatureContent.setAttribute('class', 'tmail-signature-content');
+      signatureContent.innerHTML = signature;
+      signatureContent.style.display = 'none';
+    
+      const signatureButton = document.createElement('button');
+      signatureButton.setAttribute('class', 'tmail-signature-button');
+      signatureButton.textContent = 'Signature';
+      signatureButton.contentEditable = "false";
+      signatureButton.style.backgroundImage = `${IconUtils.chevronDownSVGIconUrlEncoded}`;
+      signatureButton.setAttribute('onclick', 'handleOnClickSignature()');
+    
+      signatureContainer.appendChild(signatureButton);
+      signatureContainer.appendChild(signatureContent);
+    
+      const nodeEditor = document.querySelector('#editor');
+      if (nodeEditor) {
+        const headerQuotedMessage = document.querySelector('#editor > cite');
+        const quotedMessage = document.querySelector('#editor > blockquote');
+    
+        if (headerQuotedMessage) {
+          nodeEditor.insertBefore(signatureContainer, headerQuotedMessage);
+        } else if (quotedMessage) {
+          nodeEditor.insertBefore(signatureContainer, quotedMessage);
+        } else {
+          nodeEditor.appendChild(signatureContainer);
+        }
+      }
     }
   }
 
   function removeSignature() {
-    const nodeSignature = document.getElementsByClassName('tmail-signature');
-    if (nodeSignature.length > 0) {
-      nodeSignature[0].remove();
+    const nodeSignature = document.querySelector('#editor > .tmail-signature');
+    if (nodeSignature) {
+      nodeSignature.remove();
     }
   }
   
+  function replaceSignatureContent() {
+    const nodeSignature = document.querySelector('#editor > .tmail-signature');
+    const signatureContent = document.querySelector('#editor > .tmail-signature > .tmail-signature-content');
+    if (nodeSignature && signatureContent) {
+      signatureContent.className = 'tmail-signature';
+      signatureContent.style.display = 'block';
+        
+      if (nodeSignature.outerHTML) {
+        nodeSignature.outerHTML = signatureContent.outerHTML;
+      } else { 
+        nodeSignature.parentNode.replaceChild(signatureContent, nodeSignature); 
+      }
+    }
+  }
+  
+  function handleOnClickSignature() {
+    console.log("handleOnClickSignature");
+    const contentElement = document.querySelector('#editor > .tmail-signature > .tmail-signature-content');
+    const buttonElement = document.querySelector('#editor > .tmail-signature > .tmail-signature-button');
+    console.log("contentElement: " + contentElement);
+    console.log("buttonElement: " + buttonElement);
+    if (contentElement && buttonElement) {
+      if (contentElement.style.display === 'block') {
+        contentElement.style.display = 'none';
+        buttonElement.style.backgroundImage = `${IconUtils.chevronDownSVGIconUrlEncoded}`;
+      } else {
+        contentElement.style.display = 'block';
+        buttonElement.style.backgroundImage = `${IconUtils.chevronUpSVGIconUrlEncoded}`;
+      }
+    }
+  }
 ''';
 
 const String jsFindingInnerHtmlTags = '''

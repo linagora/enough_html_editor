@@ -325,6 +325,14 @@ class HtmlEditorApi {
     return innerHtml;
   }
 
+  /// Retrieves the edited text as HTML with signature content
+  Future<String> getTextWithSignatureContent() async {
+    await replaceSignatureContent();
+    final innerHtml = await _webViewController.evaluateJavascript(
+        source: 'document.getElementById("editor").innerHTML;');
+    return innerHtml;
+  }
+
   /// Retrieves the edited text within a complete HTML document.
   ///
   /// Optionally specify the [content] if you have previously called [getText]
@@ -412,11 +420,17 @@ class HtmlEditorApi {
 
   /// Insert signature
   Future<void> insertSignature(String signature) => _webViewController
-    .evaluateJavascript(source: 'insertSignature(`$signature`);');
+    .evaluateJavascript(
+      source: 'insertSignature(`$signature`);'
+    );
 
   /// Remove signature
   Future<void> removeSignature() => _webViewController
       .evaluateJavascript(source: 'removeSignature();');
+
+  /// Replace signature content
+  Future<void> replaceSignatureContent() => _webViewController
+      .evaluateJavascript(source: 'replaceSignatureContent();');
 
   /// MoveCursorAtLastNode
   Future<void> moveCursorAtLastNode() => _webViewController
