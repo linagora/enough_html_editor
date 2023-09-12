@@ -29,6 +29,7 @@ class HtmlEditor extends StatefulWidget {
     this.adjustHeight = true,
     this.minHeight = 100,
     this.onCreated,
+    this.onCompleted,
     this.splitBlockquotes = true,
     this.addDefaultSelectionMenuItems = true,
     this.textSelectionMenuItems,
@@ -50,6 +51,10 @@ class HtmlEditor extends StatefulWidget {
   /// Define the `onCreated(HtmlEditorApi)` callback to get notified
   /// when the API is ready.
   final void Function(HtmlEditorApi)? onCreated;
+
+  /// Define the `onCompleted(HtmlEditorApi, WebUri)` callback to get notified
+  /// when the web view loaded
+  final void Function(HtmlEditorApi, WebUri?)? onCompleted;
 
   /// Defines if blockquotes should be split when the user adds a new line
   /// - defaults to `true`.
@@ -569,6 +574,10 @@ pre {
         key: ValueKey(_initialPageContent),
         onWebViewCreated: _onWebViewCreated,
         onLoadStop: (controller, uri) async {
+          if (widget.onCompleted != null) {
+            widget.onCompleted!(_api, uri);
+          }
+
           if (widget.adjustHeight) {
             final scrollHeight = await controller.evaluateJavascript(
                 source: 'document.body.scrollHeight');
