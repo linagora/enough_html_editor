@@ -160,7 +160,6 @@ class HtmlEditorState extends State<HtmlEditor> {
   var isInList = false;
 
   function onSelectionChange() {
-    //console.log|("onSelectionChange");
     let {anchorNode, anchorOffset, focusNode, focusOffset} = document.getSelection();
     // traverse all parents to find <b>, <i> or <u> elements:
     var isBold = false;
@@ -184,7 +183,6 @@ class HtmlEditorState extends State<HtmlEditor> {
       // if (!boundingRectFound && node.getBoundingClientRect) {
       //   var boundingRect = node.getBoundingClientRect();
       //   if (boundingRect) {
-      //     console.log('bounding rect found for', node, boundingRect);
       //     boundingRectFound = true;
       //     window.flutter_inappwebview.callHandler('OffsetTracker', JSON.stringify(boundingRect));
       //   }
@@ -369,7 +367,6 @@ class HtmlEditorState extends State<HtmlEditor> {
   }
   
   function onKeyDown(event) {
-    //console.log('keydown', event.key, event);
     if (!isInList && (event.keyCode === 13 || event.key === 'Enter')) {
       if (whichTag('blockquote')) {
         document.execCommand('InsertParagraph');
