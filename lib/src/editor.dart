@@ -35,6 +35,7 @@ class HtmlEditor extends StatefulWidget {
     this.textSelectionMenuItems,
     this.enableDarkMode = false,
     this.customStyleCss,
+    this.customScripts,
   }) : super(key: key);
 
   /// Set the [initialContent] to populate the editor with some existing text
@@ -76,6 +77,9 @@ class HtmlEditor extends StatefulWidget {
 
   /// Defines add additional css styles to the html editor
   final String? customStyleCss;
+
+  /// Defines add additional scripts to the html editor
+  final String? customScripts;
 
   @override
   HtmlEditorState createState() => HtmlEditorState();
@@ -477,6 +481,8 @@ class HtmlEditorState extends State<HtmlEditor> {
 $jsHandleSignature
 
 $jsFindingInnerHtmlTags
+
+==customScripts==
 </script>
 </body>
 </html>
@@ -545,7 +551,8 @@ pre {
       buffer.write(_templateBlockquote);
     }
     final newLatestContent = _templateContinuation
-      .replaceFirst('==content==', content);
+      .replaceFirst('==content==', content)
+      .replaceFirst('==customScripts==', widget.customScripts ?? '');
 
     buffer.write(newLatestContent);
     final html = buffer.toString();
