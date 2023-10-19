@@ -442,4 +442,11 @@ class HtmlEditorApi {
       .evaluateJavascript(source: 'document.hasFocus()');
     return check;
   }
+
+  /// Get signature content
+  Future<String?> getSignatureContent() async {
+    final signature = await _webViewController
+        .evaluateJavascript(source: 'getSignatureContent();');
+    return signature;
+  }
 }

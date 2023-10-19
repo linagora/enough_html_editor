@@ -99,6 +99,15 @@ const String jsHandleSignature = '''
     }
   }
   
+  function getSignatureContent() {
+    const nodeSignature = document.querySelector('#editor > .tmail-signature');
+    if (nodeSignature) {
+      return nodeSignature.innerHTML;
+    } else {
+      return '';
+    }
+  }
+  
   function handleOnClickSignature() {
     const contentElement = document.querySelector('#editor > .tmail-signature > .tmail-signature-content');
     const buttonElement = document.querySelector('#editor > .tmail-signature > .tmail-signature-button');
