@@ -8,8 +8,7 @@ environment:
   flutter: ">=3.0.0"
 
 dependencies:
-  enough_platform_widgets:
-    git: https://github.com/Enough-Software/enough_platform_widgets
+  enough_platform_widgets: ^1.0.0
   flutter:
     sdk: flutter
   flutter_colorpicker: ^1.0.3
