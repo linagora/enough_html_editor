@@ -894,24 +894,12 @@ pre {
       }
     } else if (message == 'onfocus') {
       _isFocusing = true;
-      if(!Platform.isAndroid) {
-        FocusScope.of(context).unfocus();
-      }
-      final onFocus = _api.onFocus;
-      if (onFocus != null) {
-        onFocus();
-      }
+      _api.onFocus?.call();
     } else if (message == 'onfocusout') {
       _isFocusing = false;
-      final onFocusOut = _api.onFocusOut;
-      if (onFocusOut != null) {
-        onFocusOut();
-      }
+      _api.onFocusOut?.call();
     } else if (message == 'onKeyDown') {
-      final onKeyDown = _api.onKeyDown;
-      if (onKeyDown != null) {
-        onKeyDown();
-      }
+      _api.onKeyDown?.call();
     }
   }
 
