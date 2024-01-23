@@ -118,7 +118,6 @@ class HtmlEditorApi {
     }
     await _webViewController.clearFocus();
     await SystemChannels.textInput.invokeMethod('TextInput.hide');
-    onFocusOut?.call();
   }
 
   Future<void> hideKeyboard() async {
