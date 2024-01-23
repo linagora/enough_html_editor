@@ -112,7 +112,7 @@ class HtmlEditorApi {
   /// Removes the focus from the editor
   Future unfocus() async {
     if (onFocusOut != null) {
-      if ((await _hasFocus()) == true) {
+      if ((await hasFocus()) == true) {
         await _webViewController.clearFocus();
         onFocusOut?.call();
       }
@@ -433,7 +433,7 @@ class HtmlEditorApi {
       .evaluateJavascript(source: 'replaceSignatureContent();');
 
   /// checkHasFocus
-  Future<bool?> _hasFocus() async {
+  Future<bool?> hasFocus() async {
     final check = await _webViewController
       .evaluateJavascript(source: 'document.hasFocus()');
     return check;
