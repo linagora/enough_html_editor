@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:image/image.dart' as img;
@@ -110,15 +113,20 @@ class HtmlEditorApi {
   }
 
   /// Removes the focus from the editor
-  Future unfocus() async {
-    if (onFocusOut != null) {
-      if ((await _hasFocus()) == true) {
-        await _webViewController.clearFocus();
-        onFocusOut?.call();
-      }
-    } else {
-      return SystemChannels.textInput.invokeMethod('TextInput.hide');
+  Future<void> unfocus() async {
+    if (kDebugMode) {
+      log('HtmlEditorApi::unfocus:', name: 'EnoughHtmlEditor');
     }
+    await _webViewController.clearFocus();
+    await SystemChannels.textInput.invokeMethod('TextInput.hide');
+    onFocusOut?.call();
+  }
+
+  Future<void> hideKeyboard() async {
+    if (kDebugMode) {
+      log('HtmlEditorApi::hideKeyboard:', name: 'EnoughHtmlEditor');
+    }
+    await SystemChannels.textInput.invokeMethod('TextInput.hide');
   }
 
   /// Formats the current text to be bold

@@ -95,9 +95,21 @@ class _EditorPageState extends State<EditorPage> {
           child: SafeArea(
             child: Column(
               children: [
-                PlatformTextButton(
-                  onPressed: () => _editorApi?.unfocus(),
-                  child: const Text('Unfocus'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: _editorApi?.unfocus,
+                        child: const Text('Unfocus'),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: _editorApi?.hideKeyboard,
+                        child: const Text('Hide Keyboard'),
+                      ),
+                    ),
+                  ],
                 ),
                 PackagedHtmlEditor(
                   onCreated: (api) {
