@@ -455,4 +455,10 @@ class HtmlEditorApi {
         .evaluateJavascript(source: 'getSignatureContent();');
     return signature;
   }
+
+  /// Focus to editor - ONLY FOR IOS
+  Future<void> requestFocus() async {
+    await _webViewController
+      .evaluateJavascript(source: "document.getElementById('editor').focus();");
+  }
 }
