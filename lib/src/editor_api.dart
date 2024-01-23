@@ -445,7 +445,7 @@ class HtmlEditorApi {
       .evaluateJavascript(source: 'moveCursorAtLastNode();');
 
   /// checkHasFocus
-  Future<bool?> _hasFocus() async {
+  Future<bool?> hasFocus() async {
     final check = await _webViewController
       .evaluateJavascript(source: 'document.hasFocus()');
     return check;
