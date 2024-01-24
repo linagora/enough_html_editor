@@ -693,7 +693,7 @@ pre {
   }
 
   void _onFormatSettingsReceived(List<dynamic> parameters) {
-    // print('got format $parameters');
+    debugPrint('_onFormatSettingsReceived: $parameters');
     final int numericMessage = parameters.first;
     final callback = _api.onFormatSettingsChanged;
     if (callback != null) {
@@ -709,7 +709,7 @@ pre {
   }
 
   void _onFontSizeSettingsReceived(List<dynamic> parameters) {
-    // print('got size $parameters');
+    debugPrint('_onFontSizeSettingsReceived: $parameters');
     if (parameters.isEmpty) {
       return;
     }
@@ -749,7 +749,7 @@ pre {
 
   static Map<String, SafeFont>? _fontsByName;
   void _onFontFamilySettingsReceived(List<dynamic> parameters) {
-    // print('got font family $parameters');
+    debugPrint('_onFontFamilySettingsReceived: $parameters');
     final String? message = parameters.first;
     final callback = _api.onFontFamilyChanged;
     if (callback != null) {
@@ -767,7 +767,7 @@ pre {
   }
 
   void _onAlignSettingsReceived(List<dynamic> parameters) {
-    // print('got align $parameters');
+    debugPrint('_onAlignSettingsReceived: $parameters');
     final String? message = parameters.isNotEmpty ? parameters.first : null;
     final callback = _api.onAlignSettingsChanged;
     if (callback != null) {
@@ -794,7 +794,7 @@ pre {
   }
 
   void _onColorSettingsReceived(List<dynamic> parameters) {
-    // print('got colors  $parameters');
+    debugPrint('_onColorSettingsReceived:  $parameters');
     final String message = parameters.first;
     final callback = _api.onColorChanged;
     final parts = message.split('x');
@@ -831,7 +831,7 @@ pre {
 
   void _onLinkSettingsReceived(List<dynamic> parameters) {
     final String message = parameters.first;
-    // print('got link $message');
+    debugPrint('_onLinkSettingsReceived: $message');
     final callback = _api.onLinkSettingsChanged;
     final parts = message.split('<_>');
     if (callback != null) {
@@ -847,7 +847,7 @@ pre {
 
   void _onInternalUpdateReceived(List<dynamic> parameters) {
     final String message = parameters.first;
-    // print('InternalUpdate got update: $message');
+    debugPrint('_onInternalUpdateReceived: $message');
     if (message.startsWith('h')) {
       if (widget.adjustHeight) {
         final height = double.tryParse(message.substring(1));
