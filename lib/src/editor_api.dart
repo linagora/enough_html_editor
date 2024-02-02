@@ -438,10 +438,6 @@ class HtmlEditorApi {
   Future<void> replaceSignatureContent() => _webViewController
       .evaluateJavascript(source: 'replaceSignatureContent();');
 
-  /// MoveCursorAtLastNode
-  Future<void> moveCursorAtLastNode() => _webViewController
-      .evaluateJavascript(source: 'moveCursorAtLastNode();');
-
   /// checkHasFocus
   Future<bool?> hasFocus() async {
     final check = await _webViewController
@@ -456,9 +452,26 @@ class HtmlEditorApi {
     return signature;
   }
 
-  /// Focus to editor - ONLY FOR IOS
+  /// Focus to editor at first child
   Future<void> requestFocus() async {
-    await _webViewController
-      .evaluateJavascript(source: "document.getElementById('editor').focus();");
+    if (Platform.isIOS) {
+      await _webViewController
+        .evaluateJavascript(source: "document.getElementById('editor').focus();");
+    } else if (Platform.isAndroid) {
+      await _webViewController
+        .evaluateJavascript(source: 'requestFocusFirstNode();');
+    } else {
+      log('NOT SUPPORTED PLATFORM');
+    }
+  }
+
+  /// Focus to editor at last child
+  Future<void> requestFocusLastChild() async {
+    if (Platform.isIOS || Platform.isAndroid) {
+      await _webViewController
+        .evaluateJavascript(source: 'requestFocusLastNode();');
+    } else {
+      log('NOT SUPPORTED PLATFORM');
+    }
   }
 }
