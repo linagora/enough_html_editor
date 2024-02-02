@@ -427,23 +427,39 @@ class HtmlEditorState extends State<HtmlEditor> {
     }
   }
   
-  function moveCursorAtLastNode() {
-    var nodeSignature = document.getElementsByClassName('tmail-signature');
-    var editor = document.getElementById('editor');
-    const textnode = document.createTextNode('');
-    editor.appendChild(textnode);
-    var lastChild; 
+  function requestFocusLastNode() {
+    const nodeSignature = document.getElementsByClassName('tmail-signature');
+    const editor = document.getElementById('editor');
+    const textNode = document.createTextNode('');
+    editor.appendChild(textNode);
     editor.focus();
-    if (nodeSignature.length <= 0) {
-      lastChild = editor.lastChild;
-    } else {
-      var position = editor.childNodes.length - 1;
-      lastChild = editor.childNodes[position];
-    }
     
-    var range = document.createRange();
-    var sel = window.getSelection();
-    range.setStart(lastChild, 0);
+    const range = document.createRange();
+    const sel = window.getSelection();
+    
+    var lastChild; 
+    if (nodeSignature.length <= 0) {
+      lastChild = editor.lastElementChild;
+      range.setStartAfter(lastChild);
+    } else {
+      lastChild = nodeSignature[0];
+      range.setStart(lastChild, 0);
+    }
+    range.collapse(true);
+
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+  
+  function requestFocusFirstNode() {
+    const editor = document.getElementById('editor');
+    const textNode = document.createTextNode('');
+    editor.appendChild(textNode);
+    editor.focus();
+    
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.setStart(editor.firstElementChild, 0);
     range.collapse(true);
 
     sel.removeAllRanges();

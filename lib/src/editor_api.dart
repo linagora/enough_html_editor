@@ -432,10 +432,6 @@ class HtmlEditorApi {
   Future<void> replaceSignatureContent() => _webViewController
       .evaluateJavascript(source: 'replaceSignatureContent();');
 
-  /// MoveCursorAtLastNode
-  Future<void> moveCursorAtLastNode() => _webViewController
-      .evaluateJavascript(source: 'moveCursorAtLastNode();');
-
   /// checkHasFocus
   Future<bool?> _hasFocus() async {
     final check = await _webViewController
@@ -453,4 +449,23 @@ class HtmlEditorApi {
   /// Notifies the editor about a change of the document
   /// that can influence the height.
   Future<void> onDocumentChanged() => _htmlEditorState.onDocumentChanged();
+
+  /// Focus to editor at first child
+  Future<void> requestFocus() async {
+    if (Platform.isIOS) {
+      await _webViewController
+        .evaluateJavascript(source: "document.getElementById('editor').focus();");
+    } else if (Platform.isAndroid) {
+      await _webViewController
+        .evaluateJavascript(source: 'requestFocusFirstNode();');
+    }
+  }
+
+  /// Focus to editor at last child
+  Future<void> requestFocusLastChild() async {
+    if (Platform.isIOS || Platform.isAndroid) {
+      await _webViewController
+        .evaluateJavascript(source: 'requestFocusLastNode();');
+    }
+  }
 }
