@@ -98,6 +98,7 @@ const String jsHandleSignature = '''
         }
       }
     }
+    adjustEditorHeight();
   }
 
   function removeSignature() {
@@ -105,6 +106,7 @@ const String jsHandleSignature = '''
     if (nodeSignature) {
       nodeSignature.remove();
     }
+    adjustEditorHeight();
   }
   
   function replaceSignatureContent() {
@@ -120,6 +122,7 @@ const String jsHandleSignature = '''
         nodeSignature.parentNode.replaceChild(signatureContent, nodeSignature); 
       }
     }
+    adjustEditorHeight();
   }
   
   function getSignatureContent() {
@@ -143,6 +146,7 @@ const String jsHandleSignature = '''
         buttonElement.style.backgroundImage = `${IconUtils.chevronUpSVGIconUrlEncoded}`;
       }
     }
+    adjustEditorHeight();
   }
 ''';
 
