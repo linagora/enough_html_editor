@@ -379,14 +379,13 @@ class HtmlEditorState extends State<HtmlEditor> {
       if (whichTag('blockquote')) {
         document.execCommand('InsertParagraph');
         document.execCommand('Outdent');
+        event.preventDefault();
       } else if (whichTag('pre')) {
         document.execCommand('InsertParagraph');
         document.execCommand('formatBlock', false, 'p');
         document.execCommand('Outdent');
-      } else {
-        document.execCommand('insertLineBreak');
+        event.preventDefault();
       }
-      event.preventDefault();
       window.flutter_inappwebview.callHandler('InternalUpdate', 'onKeyDown');
     }
   }
