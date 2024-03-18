@@ -419,9 +419,9 @@ class HtmlEditorApi {
       .evaluateJavascript(source: "editLink('$href', '$text');");
 
   /// Insert signature
-  Future<void> insertSignature(String signature) => _webViewController
+  Future<void> insertSignature(String signature, {bool allowCollapsed = true}) => _webViewController
     .evaluateJavascript(
-      source: 'insertSignature(`$signature`);'
+      source: 'insertSignature(`$signature`, $allowCollapsed);'
     );
 
   /// Remove signature
