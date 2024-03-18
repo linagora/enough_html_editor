@@ -350,8 +350,18 @@ class HtmlEditorState extends State<HtmlEditor> {
     isLineBreakInput = false;
   }
 
+  function getEditorHeight() {
+    const element = document.getElementById("editor");
+    return element.scrollHeight;
+  }
+
+  function adjustEditorHeight() {
+    var height = getEditorHeight();
+    window.flutter_inappwebview.callHandler('InternalUpdate', 'h' + height);
+  }
+
   function onInput(inputEvent) {
-    var height = document.body.scrollHeight;
+    var height = getEditorHeight();
     if (height != documentHeight) {
       documentHeight = height;
       window.flutter_inappwebview.callHandler('InternalUpdate', 'h' + height);
@@ -441,7 +451,7 @@ class HtmlEditorState extends State<HtmlEditor> {
   }
 
   function onLoaded() {
-    documentHeight = document.body.scrollHeight;
+    documentHeight = getEditorHeight();
     document.onselectionchange = onSelectionChange;
     var editor = document.getElementById('editor');
     editor.oninput = onInput;
@@ -577,7 +587,7 @@ pre {
 
           if (widget.adjustHeight) {
             final scrollHeight = await controller.evaluateJavascript(
-                source: 'document.body.scrollHeight');
+                source: 'getEditorHeight()');
             if (mounted && (scrollHeight + 15.0 > widget.minHeight)) {
               setState(() {
                 _documentHeight = scrollHeight + 15.0;
@@ -902,7 +912,7 @@ pre {
   Future<void> onDocumentChanged() async {
     if (widget.adjustHeight) {
       final scrollHeight = await _webViewController.evaluateJavascript(
-          source: 'document.body.scrollHeight');
+          source: 'getEditorHeight()');
       if (scrollHeight != null &&
           mounted &&
           (scrollHeight + 15.0 > widget.minHeight)) {
