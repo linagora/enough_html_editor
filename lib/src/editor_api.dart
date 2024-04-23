@@ -449,4 +449,8 @@ class HtmlEditorApi {
         .evaluateJavascript(source: 'getSignatureContent();');
     return signature;
   }
+
+  /// Notifies the editor about a change of the document
+  /// that can influence the height.
+  Future<void> onDocumentChanged() => _htmlEditorState.onDocumentChanged();
 }
