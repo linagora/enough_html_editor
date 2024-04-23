@@ -474,4 +474,8 @@ class HtmlEditorApi {
       log('NOT SUPPORTED PLATFORM');
     }
   }
+
+  /// Notifies the editor about a change of the document
+  /// that can influence the height.
+  Future<void> onDocumentChanged() => _htmlEditorState.onDocumentChanged();
 }
