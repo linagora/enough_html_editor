@@ -176,3 +176,11 @@ const String jsFindingInnerHtmlTags = '''
   }
   
 ''';
+
+const String jsContentSizeChangeListener = '''
+  const bodyResizeObserver = new ResizeObserver(entries => {
+    window.flutter_inappwebview.callHandler('ContentSizeChangedEventListener', '');
+  })
+    
+  bodyResizeObserver.observe(document.body)
+''';
