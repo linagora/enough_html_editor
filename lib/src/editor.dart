@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -621,6 +624,7 @@ pre {
             }
           }
         },
+        onContentSizeChanged: _onContentSizeChanged,
         initialSettings: InAppWebViewSettings(
           supportZoom: false,
           transparentBackground: true,
@@ -957,6 +961,25 @@ pre {
         && maxContentHeight > documentHeight
         && mounted
     ) {
+      setState(() {
+        _documentHeight = maxContentHeight + _offsetHeight;
+      });
+    }
+  }
+
+  Future<void> _onContentSizeChanged(
+    InAppWebViewController controller,
+    Size oldContentSize,
+    Size newContentSize
+  ) async {
+    if (_isWebViewLoadCompleted || Platform.isAndroid) {
+      return;
+    }
+
+    final maxContentHeight = max(oldContentSize.height, newContentSize.height);
+    debugPrint('HtmlEditorState::_onContentSizeChanged:maxContentHeight: $maxContentHeight');
+    final documentHeight = _documentHeight ?? 0;
+    if (maxContentHeight > documentHeight && mounted) {
       setState(() {
         _documentHeight = maxContentHeight + _offsetHeight;
       });
