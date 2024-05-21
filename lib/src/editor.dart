@@ -346,7 +346,7 @@ class HtmlEditorState extends State<HtmlEditor> {
       selection.addRange(range);
     } 
 ''';
-  static const String _templateContinuation = '''
+  static final String _templateContinuation = '''
     isLineBreakInput = false;
   }
 
@@ -486,6 +486,8 @@ class HtmlEditorState extends State<HtmlEditor> {
 $jsHandleSignature
 
 $jsFindingInnerHtmlTags
+
+${Platform.isAndroid ? jsContentSizeChangeListener : ''}
 </script>
 </body>
 </html>
@@ -530,6 +532,10 @@ pre {
   /// Instead of accessing the API via the [HtmlEditorState]
   /// you can also directly get in in the [HtmlEditor.onCreated] callback.
   HtmlEditorApi get api => _api;
+
+  static const double _offsetHeight = 30.0;
+
+  bool _isWebViewLoadCompleted = false;
 
   @override
   void initState() {
@@ -579,7 +585,14 @@ pre {
   Widget _buildEditor() => InAppWebView(
         key: ValueKey(_initialPageContent),
         onWebViewCreated: _onWebViewCreated,
+        onLoadStart: (_, __) {
+          debugPrint('HtmlEditorState::_buildEditor:onLoadStart');
+          _isWebViewLoadCompleted = false;
+        },
         onLoadStop: (controller, uri) async {
+          debugPrint('HtmlEditorState::_buildEditor:onLoadStop');
+          _isWebViewLoadCompleted = true;
+
           if (widget.onCompleted != null) {
             widget.onCompleted!(_api, uri);
           }
@@ -587,9 +600,9 @@ pre {
           if (widget.adjustHeight) {
             final scrollHeight = await controller.evaluateJavascript(
                 source: 'getEditorHeight()');
-            if (mounted && (scrollHeight + 15.0 > widget.minHeight)) {
+            if (mounted && (scrollHeight + _offsetHeight > widget.minHeight)) {
               setState(() {
-                _documentHeight = scrollHeight + 15.0;
+                _documentHeight = scrollHeight + _offsetHeight;
               });
             }
           }
@@ -693,6 +706,13 @@ pre {
     //     print('OffsetTracker: [${msg.message}]');
     //   },
     // ),
+    //
+    if (Platform.isAndroid && widget.adjustHeight) {
+      controller.addJavaScriptHandler(
+        handlerName: 'ContentSizeChangedEventListener',
+        callback: _onHandleContentSizeChangedEvent
+      );
+    }
     final onCreated = widget.onCreated;
     if (onCreated != null) {
       onCreated(_api);
@@ -864,7 +884,7 @@ pre {
         final height = double.tryParse(message.substring(1));
         if (height != null) {
           setState(() {
-            _documentHeight = height + 15.0;
+            _documentHeight = height + _offsetHeight;
           });
         }
       }
@@ -914,11 +934,30 @@ pre {
           source: 'getEditorHeight()');
       if (scrollHeight != null &&
           mounted &&
-          (scrollHeight + 15.0 > widget.minHeight)) {
+          (scrollHeight +_offsetHeight > widget.minHeight)) {
         setState(() {
-          _documentHeight = scrollHeight + 15.0;
+          _documentHeight = scrollHeight + _offsetHeight;
         });
       }
+    }
+  }
+
+  Future<void> _onHandleContentSizeChangedEvent(List<dynamic> parameters) async {
+    if (_isWebViewLoadCompleted) {
+      return;
+    }
+
+    final maxContentHeight = await _webViewController.evaluateJavascript(
+        source: 'getEditorHeight()');
+    debugPrint('HtmlEditorState::_onHandleContentSizeChangedEvent:maxContentHeight: $maxContentHeight');
+    final documentHeight = _documentHeight ?? 0;
+    if (maxContentHeight is num
+        && maxContentHeight > documentHeight
+        && mounted
+    ) {
+      setState(() {
+        _documentHeight = maxContentHeight + _offsetHeight;
+      });
     }
   }
 }
