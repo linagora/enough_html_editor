@@ -457,6 +457,8 @@ class HtmlEditorState extends State<HtmlEditor> {
     editor.oninput = onInput;
     editor.onkeydown = onKeyDown;
     document.execCommand("styleWithCSS", false, true);
+    
+    $jsHandleLazyLoadingBackgroundImage
   }
   
   function displayCursorCoordinates(event) {
@@ -536,7 +538,7 @@ pre {
 
   static const double _offsetHeight = 30.0;
 
-  bool _isWebViewLoadCompleted = false;
+  bool _isFocusing = false;
 
   @override
   void initState() {
@@ -572,7 +574,7 @@ pre {
   @override
   Widget build(BuildContext context) {
     if (widget.adjustHeight) {
-      final size = MediaQuery.of(context).size;
+      final size = MediaQuery.sizeOf(context);
       return SizedBox(
         height: _documentHeight ?? size.height,
         width: size.width,
@@ -586,29 +588,13 @@ pre {
   Widget _buildEditor() => InAppWebView(
         key: ValueKey(_initialPageContent),
         onWebViewCreated: _onWebViewCreated,
-        onLoadStart: (_, __) {
-          debugPrint('HtmlEditorState::_buildEditor:onLoadStart');
-          _isWebViewLoadCompleted = false;
-        },
         onLoadStop: (controller, uri) async {
-          debugPrint('HtmlEditorState::_buildEditor:onLoadStop');
-          _isWebViewLoadCompleted = true;
-
           if (widget.onCompleted != null) {
             widget.onCompleted!(_api, uri);
           }
-
-          if (widget.adjustHeight) {
-            final scrollHeight = await controller.evaluateJavascript(
-                source: 'getEditorHeight()');
-            if (mounted && (scrollHeight + _offsetHeight > widget.minHeight)) {
-              setState(() {
-                _documentHeight = scrollHeight + _offsetHeight;
-              });
-            }
-          }
+          await onDocumentChanged();
         },
-        onContentSizeChanged: _onContentSizeChanged,
+        onContentSizeChanged: _onContentSizeChangedOnIOS,
         initialSettings: InAppWebViewSettings(
           supportZoom: false,
           transparentBackground: true,
@@ -712,7 +698,7 @@ pre {
     if (Platform.isAndroid && widget.adjustHeight) {
       controller.addJavaScriptHandler(
         handlerName: 'ContentSizeChangedEventListener',
-        callback: _onHandleContentSizeChangedEvent
+        callback: _onContentSizeChangedOnAndroid
       );
     }
     final onCreated = widget.onCreated;
@@ -880,17 +866,18 @@ pre {
 
   void _onInternalUpdateReceived(List<dynamic> parameters) {
     final String message = parameters.first;
-    // print('InternalUpdate got update: $message');
+    debugPrint('InternalUpdate got update: $message');
     if (message.startsWith('h')) {
       if (widget.adjustHeight) {
         final height = double.tryParse(message.substring(1));
-        if (height != null) {
+        if (height != null && mounted) {
           setState(() {
             _documentHeight = height + _offsetHeight;
           });
         }
       }
     } else if (message == 'onfocus') {
+      _isFocusing = true;
       if(!Platform.isAndroid) {
         FocusScope.of(context).unfocus();
       }
@@ -899,6 +886,7 @@ pre {
         onFocus();
       }
     } else if (message == 'onfocusout') {
+      _isFocusing = false;
       final onFocusOut = _api.onFocusOut;
       if (onFocusOut != null) {
         onFocusOut();
@@ -934,9 +922,9 @@ pre {
     if (widget.adjustHeight) {
       final scrollHeight = await _webViewController.evaluateJavascript(
           source: 'getEditorHeight()');
-      if (scrollHeight != null &&
-          mounted &&
-          (scrollHeight +_offsetHeight > widget.minHeight)) {
+      if (scrollHeight != null
+          && mounted
+          && (scrollHeight + _offsetHeight > widget.minHeight)) {
         setState(() {
           _documentHeight = scrollHeight + _offsetHeight;
         });
@@ -944,40 +932,42 @@ pre {
     }
   }
 
-  Future<void> _onHandleContentSizeChangedEvent(List<dynamic> parameters) async {
-    if (_isWebViewLoadCompleted) {
+  Future<void> _onContentSizeChangedOnAndroid(List<dynamic> parameters) async {
+    if (_isFocusing) {
+      debugPrint('HtmlEditorState::_onContentSizeChangedOnAndroid: Editor focusing');
       return;
     }
 
-    final maxContentHeight = await _webViewController.evaluateJavascript(
+    final contentHeight = await _webViewController.evaluateJavascript(
         source: 'getEditorHeight()');
-    debugPrint('HtmlEditorState::_onHandleContentSizeChangedEvent:maxContentHeight: $maxContentHeight');
+    debugPrint('HtmlEditorState::_onContentSizeChangedOnAndroid:contentHeight: $contentHeight');
     final documentHeight = _documentHeight ?? 0;
-    if (maxContentHeight is num
-        && maxContentHeight > documentHeight
+    if (contentHeight is num
+        && contentHeight > documentHeight
         && mounted
     ) {
       setState(() {
-        _documentHeight = maxContentHeight + _offsetHeight;
+        _documentHeight = contentHeight + _offsetHeight;
       });
     }
   }
 
-  Future<void> _onContentSizeChanged(
+  Future<void> _onContentSizeChangedOnIOS(
     InAppWebViewController controller,
     Size oldContentSize,
     Size newContentSize
   ) async {
-    if (_isWebViewLoadCompleted || Platform.isAndroid) {
+    if (_isFocusing) {
+      debugPrint('HtmlEditorState::_onContentSizeChangedOnIOS: Editor focusing');
       return;
     }
 
-    final maxContentHeight = max(oldContentSize.height, newContentSize.height);
-    debugPrint('HtmlEditorState::_onContentSizeChanged:maxContentHeight: $maxContentHeight');
+    final contentHeight = max(oldContentSize.height, newContentSize.height);
+    debugPrint('HtmlEditorState::_onContentSizeChanged:contentHeight: $contentHeight');
     final documentHeight = _documentHeight ?? 0;
-    if (maxContentHeight > documentHeight && mounted) {
+    if (contentHeight > documentHeight && mounted) {
       setState(() {
-        _documentHeight = maxContentHeight + _offsetHeight;
+        _documentHeight = contentHeight + _offsetHeight;
       });
     }
   }
