@@ -456,14 +456,11 @@ class HtmlEditorApi {
   /// that can influence the height.
   Future<void> onDocumentChanged() => _htmlEditorState.onDocumentChanged();
 
-  /// Focus to editor at first child
+  /// Focus to editor. Only for iOS
   Future<void> requestFocus() async {
     if (Platform.isIOS) {
       await _webViewController
         .evaluateJavascript(source: "document.getElementById('editor').focus();");
-    } else if (Platform.isAndroid) {
-      await _webViewController
-        .evaluateJavascript(source: 'requestFocusFirstNode();');
     }
   }
 
