@@ -204,7 +204,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         isChildOfList = true;
       } else if (node.nodeName === 'SPAN' && node.style != undefined) {
         // check for color, bold, etc in style:
-        if (node.style.fontWeight === 'bold') {
+        if (node.style.fontWeight === 'bold' || node.style.fontWeight === '700') {
           isBold = true;
         }
         if (node.style.fontStyle === 'italic') {
