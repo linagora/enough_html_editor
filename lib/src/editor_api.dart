@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:image/image.dart' as img;
+
 import 'editor.dart';
 import 'models.dart';
+import 'utils/logger.dart';
 
 /// API to control the `HtmlEditor`.
 ///
@@ -113,17 +113,13 @@ class HtmlEditorApi {
 
   /// Removes the focus from the editor
   Future<void> unfocus() async {
-    if (kDebugMode) {
-      log('HtmlEditorApi::unfocus:', name: 'EnoughHtmlEditor');
-    }
+    log('HtmlEditorApi::unfocus:');
     await _webViewController.clearFocus();
     await SystemChannels.textInput.invokeMethod('TextInput.hide');
   }
 
   Future<void> hideKeyboard() async {
-    if (kDebugMode) {
-      log('HtmlEditorApi::hideKeyboard:', name: 'EnoughHtmlEditor');
-    }
+    log('HtmlEditorApi::hideKeyboard:');
     await SystemChannels.textInput.invokeMethod('TextInput.hide');
   }
 
@@ -318,6 +314,7 @@ class HtmlEditorApi {
   }
 
   Future _execCommand(String command) async {
+    log('HtmlEditorApi::_execCommand: $command');
     await _webViewController.evaluateJavascript(
         source: 'document.execCommand($command);');
   }

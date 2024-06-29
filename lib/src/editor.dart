@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' hide log;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -9,6 +9,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'editor_api.dart';
 import 'models.dart';
 import 'utils/javascript_utils.dart';
+import 'utils/logger.dart';
 
 /// Slim HTML Editor with API
 class HtmlEditor extends StatefulWidget {
@@ -905,7 +906,7 @@ pre {
 
   void _onInternalUpdateCursorCoordinatesReceived(List<dynamic> parameters) {
     final String message = parameters.first;
-    debugPrint('InternalUpdateCursorCoordinatesReceived got update: $message');
+    log('InternalUpdateCursorCoordinatesReceived got update: $message');
     final callback = _api.onCursorCoordinatesChanged;
     if (callback != null) {
     final cursorCoordinates =  message.split(',');
@@ -938,13 +939,12 @@ pre {
 
   Future<void> _onContentSizeChangedOnAndroid(List<dynamic> parameters) async {
     if (_isFocusing) {
-      debugPrint('HtmlEditorState::_onContentSizeChangedOnAndroid: Editor focusing');
       return;
     }
 
     final contentHeight = await _webViewController.evaluateJavascript(
         source: 'getEditorHeight()');
-    debugPrint('HtmlEditorState::_onContentSizeChangedOnAndroid:contentHeight: $contentHeight');
+    log('HtmlEditorState::_onContentSizeChangedOnAndroid:contentHeight: $contentHeight');
     final documentHeight = _documentHeight ?? 0;
     if (contentHeight is num
         && contentHeight > documentHeight
@@ -962,12 +962,11 @@ pre {
     Size newContentSize
   ) async {
     if (_isFocusing) {
-      debugPrint('HtmlEditorState::_onContentSizeChangedOnIOS: Editor focusing');
       return;
     }
 
     final contentHeight = max(oldContentSize.height, newContentSize.height);
-    debugPrint('HtmlEditorState::_onContentSizeChanged:contentHeight: $contentHeight');
+    log('HtmlEditorState::_onContentSizeChanged:contentHeight: $contentHeight');
     final documentHeight = _documentHeight ?? 0;
     if (contentHeight > documentHeight && mounted) {
       setState(() {
