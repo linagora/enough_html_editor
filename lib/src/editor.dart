@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' hide log;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -9,6 +9,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'editor_api.dart';
 import 'models.dart';
 import 'utils/javascript_utils.dart';
+import 'utils/logger.dart';
 
 /// Slim HTML Editor with API
 class HtmlEditor extends StatefulWidget {
@@ -728,7 +729,7 @@ pre {
   }
 
   void _onFormatSettingsReceived(List<dynamic> parameters) {
-    // print('got format $parameters');
+    log('_onFormatSettingsReceived: $parameters');
     final int numericMessage = parameters.first;
     final callback = _api.onFormatSettingsChanged;
     if (callback != null) {
@@ -744,7 +745,7 @@ pre {
   }
 
   void _onFontSizeSettingsReceived(List<dynamic> parameters) {
-    // print('got size $parameters');
+    log('_onFontSizeSettingsReceived: $parameters');
     if (parameters.isEmpty) {
       return;
     }
@@ -784,7 +785,7 @@ pre {
 
   static Map<String, SafeFont>? _fontsByName;
   void _onFontFamilySettingsReceived(List<dynamic> parameters) {
-    // print('got font family $parameters');
+    log('_onFontFamilySettingsReceived: $parameters');
     final String? message = parameters.first;
     final callback = _api.onFontFamilyChanged;
     if (callback != null) {
@@ -802,7 +803,7 @@ pre {
   }
 
   void _onAlignSettingsReceived(List<dynamic> parameters) {
-    // print('got align $parameters');
+    log('_onAlignSettingsReceived: $parameters');
     final String? message = parameters.isNotEmpty ? parameters.first : null;
     final callback = _api.onAlignSettingsChanged;
     if (callback != null) {
@@ -829,7 +830,7 @@ pre {
   }
 
   void _onColorSettingsReceived(List<dynamic> parameters) {
-    // print('got colors  $parameters');
+    log('_onColorSettingsReceived:  $parameters');
     final String message = parameters.first;
     final callback = _api.onColorChanged;
     final parts = message.split('x');
@@ -866,7 +867,7 @@ pre {
 
   void _onLinkSettingsReceived(List<dynamic> parameters) {
     final String message = parameters.first;
-    // print('got link $message');
+    log('_onLinkSettingsReceived: $message');
     final callback = _api.onLinkSettingsChanged;
     final parts = message.split('<_>');
     if (callback != null) {
@@ -882,7 +883,7 @@ pre {
 
   void _onInternalUpdateReceived(List<dynamic> parameters) {
     final String message = parameters.first;
-    debugPrint('InternalUpdate got update: $message');
+    log('_onInternalUpdateReceived: $message');
     if (message.startsWith('h')) {
       if (widget.adjustHeight) {
         final height = double.tryParse(message.substring(1));
@@ -905,7 +906,7 @@ pre {
 
   void _onInternalUpdateCursorCoordinatesReceived(List<dynamic> parameters) {
     final String message = parameters.first;
-    debugPrint('InternalUpdateCursorCoordinatesReceived got update: $message');
+    log('InternalUpdateCursorCoordinatesReceived got update: $message');
     final callback = _api.onCursorCoordinatesChanged;
     if (callback != null) {
     final cursorCoordinates =  message.split(',');
@@ -938,13 +939,12 @@ pre {
 
   Future<void> _onContentSizeChangedOnAndroid(List<dynamic> parameters) async {
     if (_isFocusing) {
-      debugPrint('HtmlEditorState::_onContentSizeChangedOnAndroid: Editor focusing');
       return;
     }
 
     final contentHeight = await _webViewController.evaluateJavascript(
         source: 'getEditorHeight()');
-    debugPrint('HtmlEditorState::_onContentSizeChangedOnAndroid:contentHeight: $contentHeight');
+    log('HtmlEditorState::_onContentSizeChangedOnAndroid:contentHeight: $contentHeight');
     final documentHeight = _documentHeight ?? 0;
     if (contentHeight is num
         && contentHeight > documentHeight
@@ -962,12 +962,11 @@ pre {
     Size newContentSize
   ) async {
     if (_isFocusing) {
-      debugPrint('HtmlEditorState::_onContentSizeChangedOnIOS: Editor focusing');
       return;
     }
 
     final contentHeight = max(oldContentSize.height, newContentSize.height);
-    debugPrint('HtmlEditorState::_onContentSizeChanged:contentHeight: $contentHeight');
+    log('HtmlEditorState::_onContentSizeChanged:contentHeight: $contentHeight');
     final documentHeight = _documentHeight ?? 0;
     if (contentHeight > documentHeight && mounted) {
       setState(() {

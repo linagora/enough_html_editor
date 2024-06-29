@@ -1,5 +1,5 @@
 
-import 'package:enough_html_editor/src/utils/icon_utils.dart';
+import 'icon_utils.dart';
 
 const String jsHandleSignature = '''
   function insertSignature(signature, allowCollapsed) {
