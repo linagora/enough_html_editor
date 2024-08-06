@@ -1,3 +1,6 @@
+## [0.1.0] - 2024-08-06
+- Release new version 0.1.0
+
 ## [0.0.5] - 2022-05-18
 - New feature: edit / add links
 - New feature: color document foreground and background
