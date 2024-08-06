@@ -143,33 +143,7 @@ class _CustomScrollEditorPageState extends State<CustomScrollEditorPage> {
           slivers: [
             PlatformSliverAppBar(
               title: const Text('Sticky controls'),
-              floating: false,
-              pinned: true,
               stretch: true,
-              actions: [
-                DensePlatformIconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: () async {
-                    final text = await _editorApi!.getText();
-                    print('got text: [$text]');
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ResultScreen(htmlText: text),
-                      ),
-                    );
-                  },
-                ),
-                DensePlatformIconButton(
-                  icon: const Icon(Icons.looks_one),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const EditorPage(),
-                      ),
-                    );
-                  },
-                ),
-              ],
             ),
             const SliverToBoxAdapter(
               child: Padding(
