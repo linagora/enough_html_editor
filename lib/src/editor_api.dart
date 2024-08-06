@@ -449,29 +449,6 @@ class HtmlEditorApi {
     return signature;
   }
 
-  /// Focus to editor at first child
-  Future<void> requestFocus() async {
-    if (Platform.isIOS) {
-      await _webViewController
-        .evaluateJavascript(source: "document.getElementById('editor').focus();");
-    } else if (Platform.isAndroid) {
-      await _webViewController
-        .evaluateJavascript(source: 'requestFocusFirstNode();');
-    } else {
-      log('NOT SUPPORTED PLATFORM');
-    }
-  }
-
-  /// Focus to editor at last child
-  Future<void> requestFocusLastChild() async {
-    if (Platform.isIOS || Platform.isAndroid) {
-      await _webViewController
-        .evaluateJavascript(source: 'requestFocusLastNode();');
-    } else {
-      log('NOT SUPPORTED PLATFORM');
-    }
-  }
-
   /// Notifies the editor about a change of the document
   /// that can influence the height.
   Future<void> onDocumentChanged() => _htmlEditorState.onDocumentChanged();
