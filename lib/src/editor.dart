@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math' hide log;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -959,19 +958,6 @@ pre {
   Future<void> _onContentSizeChangedOnIOS(
     InAppWebViewController controller,
     Size oldContentSize,
-    Size newContentSize
-  ) async {
-    if (_isFocusing) {
-      return;
-    }
-
-    final contentHeight = max(oldContentSize.height, newContentSize.height);
-    log('HtmlEditorState::_onContentSizeChanged:contentHeight: $contentHeight');
-    final documentHeight = _documentHeight ?? 0;
-    if (contentHeight > documentHeight && mounted) {
-      setState(() {
-        _documentHeight = contentHeight + _offsetHeight;
-      });
-    }
-  }
+    Size newContentSize,
+  ) => onDocumentChanged();
 }
