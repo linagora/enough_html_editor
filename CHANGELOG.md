@@ -1,3 +1,6 @@
+## [0.1.1] - 2024-08-30
+- Fix editor height not correctly calculated on iOS
+
 ## [0.1.0] - 2024-08-06
 - Release new version 0.1.0
 
