@@ -37,6 +37,7 @@ class PackagedHtmlEditor extends StatefulWidget {
     this.initialContent = '',
     this.adjustHeight = true,
     this.minHeight = 100,
+    this.maxHeight,
     this.onCreated,
     this.splitBlockquotes = true,
     // this.addDefaultSelectionMenuItems = true,
@@ -64,6 +65,10 @@ class PackagedHtmlEditor extends StatefulWidget {
   /// Specify the [minHeight] to set a different height than
   /// the default `100` pixel.
   final int minHeight;
+
+  /// Specify the [maxHeight] to set a different height than
+  /// the default null.
+  final double? maxHeight;
 
   /// Define the `onCreated(EditorApi)` callback to get notified when the API
   /// is ready and to retrieve the end result.
@@ -109,6 +114,7 @@ class PackagedHtmlEditorState extends State<PackagedHtmlEditor> {
           HtmlEditor(
             initialContent: widget.initialContent,
             minHeight: widget.minHeight,
+            maxHeight: widget.maxHeight,
             // addDefaultSelectionMenuItems:
             // widget.addDefaultSelectionMenuItems,
             adjustHeight: widget.adjustHeight,
