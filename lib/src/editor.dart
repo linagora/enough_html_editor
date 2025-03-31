@@ -29,6 +29,7 @@ class HtmlEditor extends StatefulWidget {
     this.initialContent = '',
     this.adjustHeight = true,
     this.minHeight = 100,
+    this.maxHeight,
     this.onCreated,
     this.onCompleted,
     this.splitBlockquotes = true,
@@ -36,6 +37,7 @@ class HtmlEditor extends StatefulWidget {
     this.textSelectionMenuItems,
     this.enableDarkMode = false,
     this.customStyleCss,
+    this.onContentHeightChanged,
   }) : super(key: key);
 
   /// Set the [initialContent] to populate the editor with some existing text
@@ -48,6 +50,10 @@ class HtmlEditor extends StatefulWidget {
   /// Specify the [minHeight] to set a different height
   /// than the default `100` pixel.
   final int minHeight;
+
+  /// Specify the [maxHeight] to set a different height
+  /// than the default null.
+  final double? maxHeight;
 
   /// Define the `onCreated(HtmlEditorApi)` callback to get notified
   /// when the API is ready.
@@ -77,6 +83,9 @@ class HtmlEditor extends StatefulWidget {
 
   /// Defines add additional css styles to the html editor
   final String? customStyleCss;
+
+  /// Defines function called when the email content height changes
+  final Function(double height)? onContentHeightChanged;
 
   @override
   HtmlEditorState createState() => HtmlEditorState();
@@ -929,8 +938,13 @@ pre {
       if (scrollHeight != null
           && mounted
           && (scrollHeight + _offsetHeight > widget.minHeight)) {
+        var currentHeight = scrollHeight + _offsetHeight;
+        if (widget.maxHeight != null && currentHeight > widget.maxHeight!) {
+          currentHeight = widget.maxHeight!;
+          widget.onContentHeightChanged?.call(currentHeight);
+        }
         setState(() {
-          _documentHeight = scrollHeight + _offsetHeight;
+          _documentHeight = currentHeight;
         });
       }
     }
@@ -949,8 +963,13 @@ pre {
         && contentHeight > documentHeight
         && mounted
     ) {
+      var currentHeight = contentHeight + _offsetHeight;
+      if (widget.maxHeight != null && currentHeight > widget.maxHeight!) {
+        currentHeight = widget.maxHeight!;
+        widget.onContentHeightChanged?.call(currentHeight);
+      }
       setState(() {
-        _documentHeight = contentHeight + _offsetHeight;
+        _documentHeight = currentHeight;
       });
     }
   }

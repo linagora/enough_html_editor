@@ -1,16 +1,15 @@
-import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 
 void log(String value, {Level level = Level.info}) {
   switch(level) {
     case Level.error:
       if (kDebugMode) {
-        developer.log(value, name: 'EnoughHtmlEditor|ERROR');
+        print('EnoughHtmlEditor|ERROR:: $value');
       }
       break;
     case Level.info:
       if (kDebugMode) {
-        developer.log(value, name: 'EnoughHtmlEditor|INFO');
+        print('EnoughHtmlEditor|INFO:: $value');
       }
       break;
   }
