@@ -1,3 +1,6 @@
+## [0.1.2] - 2024-04-01
+- Fix editor gone blank with large content on iOS
+
 ## [0.1.1] - 2024-08-30
 - Fix editor height not correctly calculated on iOS
 
