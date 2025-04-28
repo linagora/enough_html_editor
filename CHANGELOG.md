@@ -1,3 +1,6 @@
+## [0.1.3] - 2024-04-28
+- Upgrade `flutter_inappwebview` version to `6.1.0`
+
 ## [0.1.2] - 2024-04-01
 - Fix editor gone blank with large content on iOS
 
