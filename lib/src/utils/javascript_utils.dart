@@ -3,11 +3,11 @@ import 'icon_utils.dart';
 
 const String jsHandleSignature = '''
   function insertSignature(signature, allowCollapsed) {
-    const signatureNode = document.querySelector('#editor > .tmail-signature');
+    const signatureNode = document.querySelector('div#editor div.tmail-signature');
     if (allowCollapsed) {
       if (signatureNode) {
-        const currentSignatureContent = document.querySelector('#editor > .tmail-signature > .tmail-signature-content');
-        const currentSignatureButton = document.querySelector('#editor > .tmail-signature > .tmail-signature-button');
+        const currentSignatureContent = document.querySelector('div#editor div.tmail-signature div.tmail-signature-content');
+        const currentSignatureButton = document.querySelector('div#editor div.tmail-signature button.tmail-signature-button');
       
         if (currentSignatureContent && currentSignatureButton) {
           currentSignatureContent.innerHTML = signature;
@@ -62,10 +62,10 @@ const String jsHandleSignature = '''
         signatureContainer.appendChild(signatureButton);
         signatureContainer.appendChild(signatureContent);
       
-        const nodeEditor = document.querySelector('#editor');
+        const nodeEditor = document.querySelector('div#editor');
         if (nodeEditor) {
-          const headerQuotedMessage = document.querySelector('#editor > cite');
-          const quotedMessage = document.querySelector('#editor > blockquote');
+          const headerQuotedMessage = document.querySelector('div#editor cite');
+          const quotedMessage = document.querySelector('div#editor blockquote');
       
           if (headerQuotedMessage) {
             nodeEditor.insertBefore(signatureContainer, headerQuotedMessage);
@@ -83,10 +83,10 @@ const String jsHandleSignature = '''
         signatureContainer.innerHTML = signature;
         signatureContainer.style.display = 'block';
       
-        const nodeEditor = document.querySelector('#editor');
+        const nodeEditor = document.querySelector('div#editor');
         if (nodeEditor) {
-          const headerQuotedMessage = document.querySelector('#editor > cite');
-          const quotedMessage = document.querySelector('#editor > blockquote');
+          const headerQuotedMessage = document.querySelector('div#editor cite');
+          const quotedMessage = document.querySelector('div#editor blockquote');
       
           if (headerQuotedMessage) {
             nodeEditor.insertBefore(signatureContainer, headerQuotedMessage);
@@ -101,15 +101,15 @@ const String jsHandleSignature = '''
   }
 
   function removeSignature() {
-    const nodeSignature = document.querySelector('#editor > .tmail-signature');
+    const nodeSignature = document.querySelector('div#editor div.tmail-signature');
     if (nodeSignature) {
       nodeSignature.remove();
     }
   }
   
   function replaceSignatureContent() {
-    const nodeSignature = document.querySelector('#editor > .tmail-signature');
-    const signatureContent = document.querySelector('#editor > .tmail-signature > .tmail-signature-content');
+    const nodeSignature = document.querySelector('div#editor div.tmail-signature');
+    const signatureContent = document.querySelector('div#editor div.tmail-signature div.tmail-signature-content');
     if (nodeSignature && signatureContent) {
       signatureContent.className = 'tmail-signature';
       signatureContent.style.display = 'block';
@@ -123,7 +123,7 @@ const String jsHandleSignature = '''
   }
   
   function getSignatureContent() {
-    const nodeSignature = document.querySelector('#editor > .tmail-signature');
+    const nodeSignature = document.querySelector('div#editor div.tmail-signature');
     if (nodeSignature) {
       return nodeSignature.innerHTML;
     } else {
@@ -132,8 +132,8 @@ const String jsHandleSignature = '''
   }
   
   function handleOnClickSignature() {
-    const contentElement = document.querySelector('#editor > .tmail-signature > .tmail-signature-content');
-    const buttonElement = document.querySelector('#editor > .tmail-signature > .tmail-signature-button');
+    const contentElement = document.querySelector('div#editor div.tmail-signature div.tmail-signature-content');
+    const buttonElement = document.querySelector('div#editor div.tmail-signature button.tmail-signature-button');
     if (contentElement && buttonElement) {
       if (contentElement.style.display === 'block') {
         contentElement.style.display = 'none';
