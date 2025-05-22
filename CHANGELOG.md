@@ -1,3 +1,6 @@
+## [0.1.4] - 2025-05-23
+- Fix update DOM selector to correctly access the signature element
+
 ## [0.1.3] - 2024-04-28
 - Upgrade `flutter_inappwebview` version to `6.1.0`
 
