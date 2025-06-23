@@ -1,3 +1,6 @@
+## [0.1.5] - 2025-06-23
+- Fix for inserting logical signature with incorrect quoting
+
 ## [0.1.4] - 2025-05-23
 - Fix update DOM selector to correctly access the signature element
 
