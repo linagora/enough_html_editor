@@ -67,9 +67,9 @@ const String jsHandleSignature = '''
           const headerQuotedMessage = document.querySelector('div#editor cite');
           const quotedMessage = document.querySelector('div#editor blockquote');
       
-          if (headerQuotedMessage) {
+          if (headerQuotedMessage && headerQuotedMessage.parentNode === nodeEditor) {
             nodeEditor.insertBefore(signatureContainer, headerQuotedMessage);
-          } else if (quotedMessage) {
+          } else if (quotedMessage && quotedMessage.parentNode === nodeEditor) {
             nodeEditor.insertBefore(signatureContainer, quotedMessage);
           } else {
             nodeEditor.appendChild(signatureContainer);
@@ -88,9 +88,9 @@ const String jsHandleSignature = '''
           const headerQuotedMessage = document.querySelector('div#editor cite');
           const quotedMessage = document.querySelector('div#editor blockquote');
       
-          if (headerQuotedMessage) {
+          if (headerQuotedMessage && headerQuotedMessage.parentNode === nodeEditor) {
             nodeEditor.insertBefore(signatureContainer, headerQuotedMessage);
-          } else if (quotedMessage) {
+          } else if (quotedMessage && quotedMessage.parentNode === nodeEditor) {
             nodeEditor.insertBefore(signatureContainer, quotedMessage);
           } else {
             nodeEditor.appendChild(signatureContainer);
