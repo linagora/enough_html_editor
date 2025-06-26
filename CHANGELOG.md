@@ -1,3 +1,6 @@
+## [0.1.6] - 2025-06-26
+- Fix changing text formatting style does not work correctly when selecting multiple
+
 ## [0.1.5] - 2025-06-23
 - Fix for inserting logical signature with incorrect quoting
 
