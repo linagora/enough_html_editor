@@ -172,10 +172,6 @@ class HtmlEditorState extends State<HtmlEditor> {
   function onSelectionChange() {
     let {anchorNode, anchorOffset, focusNode, focusOffset} = document.getSelection();
     // traverse all parents to find <b>, <i> or <u> elements:
-    var isBold = false;
-    var isItalic = false;
-    var isUnderline = false;
-    var isStrikeThrough = false;
     var node = anchorNode;
     var textAlign = undefined;
     var nestedBlockqotes = 0;
@@ -197,50 +193,17 @@ class HtmlEditorState extends State<HtmlEditor> {
       //     window.flutter_inappwebview.callHandler('OffsetTracker', JSON.stringify(boundingRect));
       //   }
       // }
-      if (node.nodeName == 'B') {
-          isBold = true;
-      } else if (node.nodeName === 'I') {
-          isItalic = true;
-      } else if (node.nodeName === 'U') {
-          isUnderline = true;
-      } else if (node.nodeName === 'STRIKE') {
-          isStrikeThrough = true;
-      } else if (node.nodeName === 'BLOCKQUOTE') {
+      if (node.nodeName === 'BLOCKQUOTE') {
           nestedBlockqotes++;
           rootBlockquote = node;
       } else if (node.nodeName === 'UL' || node.nodeName === 'OL') {
         isChildOfList = true;
       } else if (node.nodeName === 'SPAN' && node.style != undefined) {
-        // check for color, bold, etc in style:
-        if (node.style.fontWeight === 'bold' || node.style.fontWeight === '700') {
-          isBold = true;
-        }
-        if (node.style.fontStyle === 'italic') {
-          isItalic = true;
-        }
         if (fontSize == undefined && node.style.fontSize != undefined) {
           fontSize = node.style.fontSize;
         }
         if (fontFamily == undefined && node.style.fontFamily != undefined) {
           fontFamily = node.style.fontFamily;
-        }
-        var textDecorationLine = node.style.textDecorationLine;
-        if (textDecorationLine === '') {
-          textDecorationLine = node.style.textDecoration;
-        }
-        if (textDecorationLine != undefined) {
-          if (textDecorationLine === 'underline') {
-            isUnderline = true;
-          } else if (textDecorationLine === 'line-through') {
-            isStrikeThrough = true;
-          } else {
-            if (!isUnderline) {
-              isUnderline = textDecorationLine.includes('underline');
-            }
-            if (!isStrikeThrough) {
-              isStrikeThrough = textDecorationLine.includes('line-through');
-            }
-          }
         }
         if (foregroundColor == undefined && node.style.color != undefined) {
           foregroundColor = node.style.color;
@@ -258,26 +221,6 @@ class HtmlEditorState extends State<HtmlEditor> {
       node = node.parentNode;
     }
     isInList = isChildOfList;
-    if (isBold != isSelectionBold || isItalic != isSelectionItalic || isUnderline != isSelectionUnderline || isStrikeThrough != isSelectionStrikeThrough) {
-      isSelectionBold = isBold;
-      isSelectionItalic = isItalic;
-      isSelectionUnderline = isUnderline;
-      isSelectionStrikeThrough = isStrikeThrough;
-      var message = 0;
-      if (isBold) {
-          message += 1;
-      }
-      if (isItalic) {
-          message += 2;
-      }
-      if (isUnderline) {
-          message += 4;
-      }
-      if (isStrikeThrough) {
-        message += 8;
-      }
-      window.flutter_inappwebview.callHandler('FormatSettings', message);
-    }
     if (textAlign != selectionTextAlign) {
       selectionTextAlign = textAlign;
       window.flutter_inappwebview.callHandler('AlignSettings', textAlign);
@@ -484,6 +427,10 @@ class HtmlEditorState extends State<HtmlEditor> {
     document.execCommand("styleWithCSS", false, true);
     
     $jsHandleLazyLoadingBackgroundImage
+    
+    observeTextFormatting(editor, (format) => {
+      window.flutter_inappwebview.callHandler('FormatSettings', format);
+    });
   }
   
   function displayCursorCoordinates(event) {
@@ -504,6 +451,8 @@ class HtmlEditorState extends State<HtmlEditor> {
     let result = [x,y].toString();
     window.flutter_inappwebview.callHandler('InternalUpdateCursorCoordinates', result);
   }
+  
+  $jsHandleTextFormatting
 </script>
 </head>
 <body onload="onLoaded();">
@@ -736,18 +685,20 @@ pre {
 
   void _onFormatSettingsReceived(List<dynamic> parameters) {
     log('_onFormatSettingsReceived: $parameters');
-    final int numericMessage = parameters.first;
-    final callback = _api.onFormatSettingsChanged;
-    if (callback != null) {
-      callback(
-        FormatSettings(
-          isBold: (numericMessage & 1) == 1,
-          isItalic: (numericMessage & 2) == 2,
-          isUnderline: (numericMessage & 4) == 4,
-          isStrikeThrough: (numericMessage & 8) == 8,
-        ),
-      );
-    }
+    final format = Map<String, dynamic>.from(parameters[0]);
+    final isBold = format['bold'] == true;
+    final isItalic = format['italic'] == true;
+    final isUnderline = format['underline'] == true;
+    final isStrikeThrough = format['strikeThrough'] == true;
+
+    _api.onFormatSettingsChanged?.call(
+      FormatSettings(
+        isBold: isBold,
+        isItalic: isItalic,
+        isUnderline: isUnderline,
+        isStrikeThrough: isStrikeThrough,
+      ),
+    );
   }
 
   void _onFontSizeSettingsReceived(List<dynamic> parameters) {

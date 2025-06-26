@@ -206,3 +206,84 @@ const String jsHandleLazyLoadingBackgroundImage = '''
     lazyImageObserver.observe(lazyImage);
   });
 ''';
+
+const String jsHandleTextFormatting= '''
+  function observeTextFormatting(editorElement, onFormatChange) {
+    let lastFormat = {};
+  
+    function detectFormatting() {
+      const selection = window.getSelection();
+      let node = selection.rangeCount > 0 ? selection.getRangeAt(0).startContainer : null;
+  
+      if (!node) return;
+  
+      if (node.nodeType === Node.TEXT_NODE) {
+        node = node.parentNode;
+      }
+  
+      let format = {
+        bold: false,
+        italic: false,
+        underline: false,
+        strikeThrough: false,
+      };
+  
+      let current = node;
+  
+      while (current && current.nodeType === 1) {
+        const tag = current.tagName?.toLowerCase?.() || "";
+        const style = current.style || {};
+        const computed = window.getComputedStyle(current);
+  
+        // Tag-based checks
+        if (tag === 'b' || tag === 'strong') format.bold = true;
+        if (tag === 'i' || tag === 'em') format.italic = true;
+        if (tag === 'u') format.underline = true;
+        if (['s', 'strike', 'del'].includes(tag)) format.strikeThrough = true;
+  
+        // Inline style checks
+        if (style.fontWeight === 'bold' || style.fontWeight === '700') format.bold = true;
+        if (style.fontStyle === 'italic') format.italic = true;
+        if (style.textDecoration?.includes('underline')) format.underline = true;
+        if (style.textDecoration?.includes('line-through')) format.strikeThrough = true;
+  
+        // Computed style checks
+        if (computed.fontWeight === 'bold' || parseInt(computed.fontWeight) >= 600) format.bold = true;
+        if (computed.fontStyle === 'italic') format.italic = true;
+        if (computed.textDecorationLine?.includes('underline')) format.underline = true;
+        if (computed.textDecorationLine?.includes('line-through')) format.strikeThrough = true;
+  
+        current = current.parentNode;
+      }
+  
+      const formatChanged = (
+        format.bold !== lastFormat.bold ||
+        format.italic !== lastFormat.italic ||
+        format.underline !== lastFormat.underline ||
+        format.strikeThrough !== lastFormat.strikeThrough
+      );
+  
+      if (formatChanged) {
+        lastFormat = format;
+        onFormatChange(format);
+      }
+    }
+  
+    const observer = new MutationObserver(() => {
+      detectFormatting();
+    });
+  
+    observer.observe(editorElement, {
+      childList: true,
+      characterData: true,
+      attributes: true,
+      subtree: true,
+    });
+  
+    document.addEventListener('selectionchange', () => {
+      if (editorElement.contains(document.activeElement)) {
+        detectFormatting();
+      }
+    });
+  }
+''';
