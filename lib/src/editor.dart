@@ -366,6 +366,10 @@ class HtmlEditorState extends State<HtmlEditor> {
     selection.addRange(range);
   }
 
+  function isSelectionRangeAvailable() {
+    return selectionRange != undefined;
+  }
+
   function storeSelectionRange() {
     selectionRange = document.getSelection().getRangeAt(0);
     return selectionRange.toString();

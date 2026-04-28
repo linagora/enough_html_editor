@@ -377,17 +377,31 @@ class HtmlEditorApi {
     return _removeQuotes(text);
   }
 
-  String _removeQuotes(String text) {
+  String? _removeQuotes(String? text) {
+    if (text == null) {
+      return null;
+    }
     if (text.length > 1 && text.startsWith('"') && text.endsWith('"')) {
       return text.substring(1, text.length - 1);
     }
     return text;
   }
 
+  /// Return false if user has never focused on the editor
+  Future<bool> isSelectionRangeAvailable() async {
+    final result = await _webViewController.evaluateJavascript(
+        source: 'isSelectionRangeAvailable();');
+    if (result is bool) {
+      return result;
+    } else {
+      return result == 'true';
+    }
+  }
+
   /// Stores the current selection and retrieves the selected text.
   ///
   /// Compare [restoreSelectionRange]
-  Future<String> storeSelectionRange() async {
+  Future<String?> storeSelectionRange() async {
     final text = await _webViewController.evaluateJavascript(
         source: 'storeSelectionRange();');
     return _removeQuotes(text);
@@ -466,6 +480,14 @@ class HtmlEditorApi {
     if (Platform.isIOS || Platform.isAndroid) {
       await _webViewController
         .evaluateJavascript(source: 'requestFocusLastNode();');
+    }
+  }
+
+  /// Focus to editor at first child
+  Future<void> requestFocusFirstChild() async {
+    if (Platform.isIOS || Platform.isAndroid) {
+      await _webViewController.evaluateJavascript(
+          source: 'requestFocusFirstNode();');
     }
   }
 }
