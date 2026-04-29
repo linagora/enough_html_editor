@@ -371,7 +371,9 @@ class HtmlEditorState extends State<HtmlEditor> {
   }
 
   function storeSelectionRange() {
-    selectionRange = document.getSelection().getRangeAt(0);
+    const selection = document.getSelection();
+    if (!selection || selection.rangeCount === 0) return null;
+    selectionRange = selection.getRangeAt(0);
     return selectionRange.toString();
   }
 
