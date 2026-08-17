@@ -1,3 +1,6 @@
+## [0.1.7] - 2026-08-17
+- Add optional `HtmlEditor.baseUrlResolver` to fix mobile WebView asset/font loading: `InAppWebViewController.loadData()` is now called with a `baseUrl` (resolved once and reused for `setText`), so relative asset URLs in injected CSS (e.g. `@font-face` src paths) can resolve instead of 404ing. `shouldOverrideUrlLoading` now also allows the resolved `baseUrl`'s initial-load navigation. No behavior change for consumers who don't pass `baseUrlResolver`.
+
 ## [0.1.6] - 2025-06-26
 - Fix changing text formatting style does not work correctly when selecting multiple
 
