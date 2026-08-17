@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -38,6 +39,7 @@ class HtmlEditor extends StatefulWidget {
     this.enableDarkMode = false,
     this.customStyleCss,
     this.onContentHeightChanged,
+    this.baseUrlResolver,
   }) : super(key: key);
 
   /// Set the [initialContent] to populate the editor with some existing text
@@ -86,6 +88,16 @@ class HtmlEditor extends StatefulWidget {
 
   /// Defines function called when the email content height changes
   final Function(double height)? onContentHeightChanged;
+
+  /// Optional resolver for the WebView `loadData` `baseUrl`.
+  ///
+  /// On mobile, `InAppWebViewController.loadData()` needs a `baseUrl` for
+  /// relative asset URLs in injected CSS/HTML (e.g. `@font-face` src paths)
+  /// to resolve - without it, the WebView has no base to resolve them
+  /// against and the asset load 404s. Pass a resolver that returns the
+  /// app's on-disk `flutter_assets/` URL (or `null` on web/unsupported
+  /// platforms, where this is a no-op).
+  final Future<WebUri?> Function()? baseUrlResolver;
 
   @override
   HtmlEditorState createState() => HtmlEditorState();
@@ -479,6 +491,13 @@ ${Platform.isAndroid ? jsContentSizeChangeListener : ''}
   late InAppWebViewController _webViewController;
   double? _documentHeight;
   late HtmlEditorApi _api;
+  WebUri? _baseUrl;
+
+  /// The resolved `baseUrl` used for the WebView's `loadData` calls.
+  ///
+  /// Resolved once via [HtmlEditor.baseUrlResolver] when the WebView is
+  /// created and reused for subsequent `loadData` calls (e.g. [setText]).
+  WebUri? get baseUrl => _baseUrl;
 
   /// Allows to replace the existing styles.
   String styles = '''
@@ -581,13 +600,19 @@ pre {
           forceDark: widget.enableDarkMode ? ForceDark.ON : ForceDark.AUTO,
         ),
         // deny browsing while editing:
-        shouldOverrideUrlLoading: (controller, navigation) =>
-            // this is required for iOS / WKWebKit:
-            navigation.isForMainFrame &&
-                    navigation.request.url?.toString() == 'about:blank'
-                ? Future.value(NavigationActionPolicy.ALLOW)
+        shouldOverrideUrlLoading: (controller, navigation) {
+          // this is required for iOS / WKWebKit:
+          final url = navigation.request.url?.toString();
+          final isInitialLoad = navigation.isForMainFrame &&
+              (url == 'about:blank' ||
+                  (url != null && url == _baseUrl?.toString()));
+          return Future.value(
+            isInitialLoad
+                ? NavigationActionPolicy.ALLOW
                 // for all other requests: block
-                : Future.value(NavigationActionPolicy.CANCEL),
+                : NavigationActionPolicy.CANCEL,
+          );
+        },
         gestureRecognizers: const {
           Factory<LongPressGestureRecognizer>(LongPressGestureRecognizer.new),
         },
@@ -629,9 +654,15 @@ pre {
         onScrollChanged: (controller, x, y) => controller.scrollTo(x: 0, y: 0),
       );
 
-  void _onWebViewCreated(InAppWebViewController controller) {
+  Future<void> _onWebViewCreated(InAppWebViewController controller) async {
     _webViewController = controller;
-    controller.loadData(data: _initialPageContent);
+    _baseUrl = await widget.baseUrlResolver?.call();
+    unawaited(
+      controller.loadData(
+        data: _initialPageContent,
+        baseUrl: _baseUrl,
+      ),
+    );
     _api.webViewController = controller;
     controller
       ..addJavaScriptHandler(
