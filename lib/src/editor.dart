@@ -10,6 +10,7 @@ import 'editor_api.dart';
 import 'models.dart';
 import 'utils/javascript_utils.dart';
 import 'utils/logger.dart';
+import 'utils/webview_asset_base_url.dart';
 
 /// Slim HTML Editor with API
 class HtmlEditor extends StatefulWidget {
@@ -603,9 +604,13 @@ pre {
         shouldOverrideUrlLoading: (controller, navigation) {
           // this is required for iOS / WKWebKit:
           final url = navigation.request.url?.toString();
-          final isInitialLoad = navigation.isForMainFrame &&
-              (url == 'about:blank' ||
-                  (url != null && url == _baseUrl?.toString()));
+          final isInitialLoad = WebViewAssetBaseUrl.isProgrammaticDocumentLoad(
+            isForMainFrame: navigation.isForMainFrame,
+            hasGesture: navigation.hasGesture,
+            requestScheme: navigation.request.url?.scheme,
+            url: url,
+            baseUrl: _baseUrl,
+          );
           return Future.value(
             isInitialLoad
                 ? NavigationActionPolicy.ALLOW
